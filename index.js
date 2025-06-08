@@ -52,15 +52,15 @@ client.on('guildMemberAdd', member => {
     let canal = member.guild.channels.cache.get("1378102192741027961")
     canal.send(`Oláaaa, ${member.id}. Já somos ${member.guild.memberCount}`)
 })
-client.on("voiceStateUpdate", async (oldState, newState) => {
 
+client.on("voiceStateUpdate", async (oldState, newState) => {
     const userId = newState.id;
 
     const entrou = !oldState.channelId && newState.channelId;
     const saiu = oldState.channelId && !newState.channelId;
 
     if (entrou) {
-        callTime.set(userId, Date.now())
+        callTime.set(userId, Date.now());
     }
 
     if (saiu && callTime.has(userId)) {
@@ -68,11 +68,13 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
         const tempoEmCall = Date.now() - tempoEntrada;
         callTime.delete(userId);
 
+        const guildId = oldState.guild?.id || newState.guild?.id;
+
         await prisma.callTime.upsert({
             where: {
                 userId_guildId: {
-                    userId: userId,
-                    guildId: guildId
+                    userId,
+                    guildId
                 }
             },
             update: {
@@ -86,6 +88,7 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
         });
     }
 });
+
 
 client.once('ready', () => {
     console.log(`✅ Bot está online como ${client.user.tag}`);

@@ -9,10 +9,10 @@ datasource db {
 model CallTime {
   id        Int                @id @default(autoincrement())
   userId    String
-  guildId   String?
+  guildId   String             // ← agora obrigatório
   totalMs   BigInt             @default(0)
 
-  history   CallTimeHistory[] // <- relação reversa
+  history   CallTimeHistory[] // relação reversa
 
   @@unique([userId, guildId])
 }
