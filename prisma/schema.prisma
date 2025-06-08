@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model CallTime {
+  userId  String  @id
+  totalMs BigInt
+  history CallTimeHistory[]
+}
+
+model CallTimeHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  totalMs   BigInt
+  month     Int
+  year      Int
+  createdAt DateTime @default(now())
+
+  CallTime  CallTime @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@unique([userId, month, year])
+}
