@@ -11,6 +11,7 @@ const resetMensal = async () => {
         await prisma.callTimeHistory.create({
             data: {
                 userId: user.userId,
+                guildId: user.guildId,
                 totalMs: user.totalMs,
                 month,
                 year,
@@ -18,13 +19,19 @@ const resetMensal = async () => {
         });
 
         await prisma.callTime.update({
-            where: { userId: user.userId },
+            where: {
+                userId_guildId: {
+                    userId: user.userId,
+                    guildId: user.guildId
+                }
+            },
             data: { totalMs: BigInt(0) }
         });
     }
 
     console.log(`📆 Reset mensal realizado para ${month}/${year}`);
 };
+
 
 setInterval(async () => {
     const hoje = new Date();
@@ -212,9 +219,12 @@ client.on('messageCreate', async message => {
     }
     else if (message.content === `${prefixo}tempo`) {
         const userId = message.author.id;
+        const guildId = message.guild.id;
 
         const dados = await prisma.callTime.findUnique({
-            where: { userId },
+            where: {
+                userId_guildId: { userId, guildId }
+            }
         });
 
         if (!dados) {
@@ -231,8 +241,12 @@ client.on('messageCreate', async message => {
             message.delete()
         }, 3000)
     }
+
     else if (message.content === `${prefixo}top5`) {
+        const guildId = message.guild.id;
+
         const topUsers = await prisma.callTime.findMany({
+            where: { guildId },
             orderBy: { totalMs: 'desc' },
             take: 5,
         });
@@ -257,6 +271,7 @@ client.on('messageCreate', async message => {
             message.delete()
         }, 5000)
     }
+
 });
 
 client.login(TOKEN);
