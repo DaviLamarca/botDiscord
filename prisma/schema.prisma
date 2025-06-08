@@ -6,22 +6,26 @@ datasource db {
   provider = "sqlite"
   url      = "file:./dev.db"
 }
-
 model CallTime {
-  userId  String  @id
-  totalMs BigInt
-  history CallTimeHistory[]
+  id        Int                @id @default(autoincrement())
+  userId    String
+  guildId   String?
+  totalMs   BigInt             @default(0)
+
+  history   CallTimeHistory[] // <- relação reversa
+
+  @@unique([userId, guildId])
 }
 
 model CallTimeHistory {
-  id        String   @id @default(uuid())
+  id        Int       @id @default(autoincrement())
   userId    String
-  totalMs   BigInt
-  month     Int
-  year      Int
-  createdAt DateTime @default(now())
+  guildId   String
+  joinTime  DateTime
+  leaveTime DateTime
 
-  CallTime  CallTime @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  callTime  CallTime  @relation(fields: [userId, guildId], references: [userId, guildId], onDelete: Cascade)
 
-  @@unique([userId, month, year])
+  @@index([userId, guildId])
 }
+

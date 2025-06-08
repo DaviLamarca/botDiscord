@@ -69,9 +69,20 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
         callTime.delete(userId);
 
         await prisma.callTime.upsert({
-            where: { userId },
-            update: { totalMs: { increment: BigInt(tempoEmCall) } },
-            create: { userId, totalMs: BigInt(tempoEmCall) },
+            where: {
+                userId_guildId: {
+                    userId: userId,
+                    guildId: guildId
+                }
+            },
+            update: {
+                totalMs: { increment: BigInt(tempoEmCall) }
+            },
+            create: {
+                userId,
+                guildId,
+                totalMs: BigInt(tempoEmCall)
+            }
         });
     }
 });
