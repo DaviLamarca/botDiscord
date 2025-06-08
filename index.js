@@ -45,8 +45,8 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const callTime = new Map()
 
-//VOCÊ TEM QUE TENTAR SOZINHO, DEPOIS PESQUISA.
-const TOKEN = 'MTM4MDM4NDgwODY3NjYyMjQyNg.GS98cF.nMU1-pnitRnrUCv2dG7woeN2HL6c1umylgJ6xs';
+require('dotenv').config();
+const TOKEN = process.env.TOKEN;
 
 client.on('guildMemberAdd', member => {
     let canal = member.guild.channels.cache.get("1378102192741027961")
